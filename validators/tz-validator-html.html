@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בודק תקינות תעודת זהות ישראלית</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .input-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .id-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px 20px;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 3px solid #e1e5e9;
+            border-radius: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .id-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 10px rgba(102, 126, 234, 0.1);
+        }
+
+        .check-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .check-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .check-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: 2px solid #45a049;
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            border: 2px solid #d32f2f;
+        }
+
+        .calculation {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+            border: 1px solid #e9ecef;
+        }
+
+        .calculation h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .step {
+            background: white;
+            padding: 12px 20px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-right: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+        }
+
+        .step.highlight {
+            background: #e3f2fd;
+            border-right-color: #2196f3;
+            font-weight: 600;
+        }
+
+        .digit-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .digit-box {
+            width: 40px;
+            height: 50px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            background: white;
+            position: relative;
+        }
+
+        .digit-box.filled {
+            border-color: #667eea;
+            background: #f0f4ff;
+            color: #667eea;
+        }
+
+        .digit-box.check-digit {
+            background: #ff4757;
+            color: white;
+            border-color: #ff4757;
+        }
+
+        .position-label {
+            position: absolute;
+            top: -20px;
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        .info-section {
+            background: #e8f4fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid #b3d9f2;
+        }
+
+        .info-section h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .info-section p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .info-section ol {
+            color: #555;
+            margin-right: 20px;
+        }
+
+        .info-section li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .id-input {
+                font-size: 1.3rem;
+                letter-spacing: 2px;
+            }
+
+            .digit-box {
+                width: 35px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-btn">
+                🏠 דף הבית הראשי
+            </a>
+            <h1><i class="fas fa-id-card"></i> בודק תעודת זהות</h1>
+            <p>בדיקה מהירה ומדויקת של תקינות מספר תעודת זהות ישראלית</p>
+        </div>
+
+        <div class="content">
+            <div class="input-section">
+                <label for="idNumber" class="input-label">
+                    <i class="fas fa-keyboard"></i> הזן מספר תעודת זהות (9 ספרות)
+                </label>
+                <input type="text" id="idNumber" class="id-input" placeholder="123456789" maxlength="9">
+                
+                <div id="digitDisplay" class="digit-display">
+                    <div class="digit-box"><span class="position-label">1</span></div>
+                    <div class="digit-box"><span class="position-label">2</span></div>
+                    <div class="digit-box"><span class="position-label">3</span></div>
+                    <div class="digit-box"><span class="position-label">4</span></div>
+                    <div class="digit-box"><span class="position-label">5</span></div>
+                    <div class="digit-box"><span class="position-label">6</span></div>
+                    <div class="digit-box"><span class="position-label">7</span></div>
+                    <div class="digit-box"><span class="position-label">8</span></div>
+                    <div class="digit-box check-digit"><span class="position-label">9</span></div>
+                </div>
+
+                <button id="checkBtn" class="check-btn">
+                    <i class="fas fa-check-circle"></i> בדוק תקינות
+                </button>
+            </div>
+
+            <div id="result" class="result"></div>
+
+            <div id="calculation" class="calculation">
+                <h3><i class="fas fa-calculator"></i> פירוט החישוב</h3>
+                <div id="steps"></div>
+            </div>
+
+            <div class="info-section">
+                <h3><i class="fas fa-info-circle"></i> איך עובד אלגוריתם בדיקת תעודת זהות?</h3>
+                <p>תעודות זהות ישראליות מבוססות על אלגוריתם לוהן לבדיקת תקינות:</p>
+                <ol>
+                    <li><strong>מקומות זוגיים (1,3,5,7):</strong> כפל ב-1</li>
+                    <li><strong>מקומות אי-זוגיים (2,4,6,8):</strong> כפל ב-2</li>
+                    <li><strong>אם התוצאה > 9:</strong> חסר 9 מהתוצאה</li>
+                    <li><strong>חבר את כל התוצאות של 8 הספרות הראשונות</strong></li>
+                    <li><strong>ספרת הביקורת:</strong> המספר שמשלים את הסכום ל-10 הקרוב</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const idInput = document.getElementById('idNumber');
+            const checkBtn = document.getElementById('checkBtn');
+            const resultDiv = document.getElementById('result');
+            const calculationDiv = document.getElementById('calculation');
+            const stepsDiv = document.getElementById('steps');
+            const digitBoxes = document.querySelectorAll('.digit-box');
+
+            // עדכון תצוגת הספרות בזמן אמת
+            idInput.addEventListener('input', function() {
+                const value = this.value.replace(/\D/g, ''); // רק ספרות
+                this.value = value;
+                
+                // עדכון תצוגת הספרות
+                digitBoxes.forEach((box, index) => {
+                    const digitSpan = box.querySelector('span:not(.position-label)') || document.createElement('span');
+                    if (!box.querySelector('span:not(.position-label)')) {
+                        box.appendChild(digitSpan);
+                    }
+                    
+                    if (value[index]) {
+                        digitSpan.textContent = value[index];
+                        box.classList.add('filled');
+                    } else {
+                        digitSpan.textContent = '';
+                        box.classList.remove('filled');
+                    }
+                });
+
+                // הסתר תוצאות קודמות
+                resultDiv.style.display = 'none';
+                calculationDiv.style.display = 'none';
+            });
+
+            // בדיקה בלחיצה על כפתור או Enter
+            checkBtn.addEventListener('click', validateID);
+            idInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    validateID();
+                }
+            });
+
+            function validateID() {
+                const idNumber = idInput.value.trim();
+
+                // בדיקת תקינות בסיסית
+                if (!idNumber) {
+                    showError('יש להזין מספר תעודת זהות');
+                    return;
+                }
+
+                if (idNumber.length !== 9) {
+                    showError('מספר תעודת זהות חייב להכיל בדיוק 9 ספרות');
+                    return;
+                }
+
+                if (!/^\d+$/.test(idNumber)) {
+                    showError('מספר תעודת זהות יכול להכיל רק ספרות');
+                    return;
+                }
+
+                // חישוב ואימות
+                const result = calculateCheckDigit(idNumber);
+                showCalculation(result);
+
+                if (result.isValid) {
+                    showSuccess('✅ מספר תעודת הזהות תקין!');
+                } else {
+                    showError(`❌ מספר תעודת הזהות שגוי!<br>ספרת הביקורת הנכונה: <strong>${result.calculatedCheckDigit}</strong><br>ספרת הביקורת שהוזנה: <strong>${result.actualCheckDigit}</strong>`);
+                }
+            }
+
+            function calculateCheckDigit(idNumber) {
+                const digits = idNumber.split('').map(Number);
+                let sum = 0;
+                const steps = [];
+
+                // חישוב עבור 8 הספרות הראשונות
+                for (let i = 0; i < 8; i++) {
+                    const digit = digits[i];
+                    const multiplier = (i % 2 === 0) ? 1 : 2;
+                    let product = digit * multiplier;
+                    
+                    if (product > 9) {
+                        product = product - 9;
+                        steps.push(`מקום ${i + 1}: ${digit} × ${multiplier} = ${digit * multiplier} → ${digit * multiplier} - 9 = ${product}`);
+                    } else {
+                        steps.push(`מקום ${i + 1}: ${digit} × ${multiplier} = ${product}`);
+                    }
+                    
+                    sum += product;
+                }
+
+                const mod = sum % 10;
+                const calculatedCheckDigit = (10 - mod) % 10;
+                const actualCheckDigit = digits[8];
+
+                return {
+                    steps,
+                    sum,
+                    mod,
+                    calculatedCheckDigit,
+                    actualCheckDigit,
+                    isValid: calculatedCheckDigit === actualCheckDigit
+                };
+            }
+
+            function showCalculation(result) {
+                let html = '';
+                
+                // שלבי החישוב
+                result.steps.forEach(step => {
+                    html += `<div class="step">${step}</div>`;
+                });
+
+                // סיכום
+                html += `<div class="step highlight">סכום כל התוצאות: ${result.sum}</div>`;
+                html += `<div class="step highlight">שארית לחלוקה ב-10: ${result.sum} ÷ 10 = ${Math.floor(result.sum/10)} שארית ${result.mod}</div>`;
+                
+                if (result.mod === 0) {
+                    html += `<div class="step highlight">ספרת ביקורת נכונה: כיוון שאין שארית = 0</div>`;
+                } else {
+                    html += `<div class="step highlight">ספרת ביקורת נכונה: 10 - ${result.mod} = ${result.calculatedCheckDigit}</div>`;
+                }
+                
+                html += `<div class="step highlight">ספרת הביקורת בפועל: ${result.actualCheckDigit}</div>`;
+
+                stepsDiv.innerHTML = html;
+                calculationDiv.style.display = 'block';
+            }
+
+            function showSuccess(message) {
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = message;
+                resultDiv.style.display = 'block';
+            }
+
+            function showError(message) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = message;
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

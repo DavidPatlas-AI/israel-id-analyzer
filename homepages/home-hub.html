@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מרכז הכלים - בודק</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: linear-gradient(180deg, #001d3d 0%, #232526 100%);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+      direction: rtl;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2em 1em 3em 1em;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5em;
+      font-size: 2.2em;
+      color: #ffd700;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #0008;
+    }
+    .search-box {
+      width: 100%;
+      max-width: 350px;
+      margin: 0 auto 2em auto;
+      display: block;
+      padding: 0.7em 1em;
+      border-radius: 1.5em;
+      border: none;
+      font-size: 1.1em;
+      background: #232526;
+      color: #ffd700;
+      box-shadow: 0 2px 8px #ffd70022;
+      outline: none;
+      text-align: right;
+    }
+    .category {
+      margin-bottom: 2.5em;
+    }
+    .category-title {
+      font-size: 1.3em;
+      color: #ffd700;
+      margin-bottom: 0.7em;
+      border-bottom: 1.5px solid #ffd70055;
+      padding-bottom: 0.2em;
+      letter-spacing: 0.5px;
+    }
+    .tools-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+    }
+    .tool-btn {
+      flex: 1 1 220px;
+      min-width: 220px;
+      max-width: 320px;
+      background: #232526;
+      color: #fff;
+      border: 2px solid #ffd70055;
+      border-radius: 1em;
+      padding: 1.2em 1em;
+      font-size: 1.1em;
+      font-weight: 500;
+      margin-bottom: 0.5em;
+      cursor: pointer;
+      transition: background 0.2s, border 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+      box-shadow: 0 2px 8px #ffd70022;
+      position: relative;
+      animation: fadeInUp 0.7s;
+    }
+    .tool-btn:hover {
+      background: #ffd700;
+      color: #232526;
+      border-color: #ffd700;
+      box-shadow: 0 8px 24px #ffd70055;
+      transform: translateY(-4px) scale(1.03) rotate(-1deg);
+    }
+    .tool-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 8px #ffd70022;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px);}
+      to   { opacity: 1; transform: none;}
+    }
+    .tool-btn .react-icon {
+      width: 1.5em;
+      height: 1.5em;
+      vertical-align: middle;
+      margin-left: 0.3em;
+      filter: drop-shadow(0 0 2px #61dafbaa);
+    }
+    .tool-btn .html-icon {
+      width: 1.5em;
+      height: 1.5em;
+      vertical-align: middle;
+      margin-left: 0.3em;
+      filter: drop-shadow(0 0 2px #ffd700aa);
+    }
+    .tool-btn .tooltip {
+      visibility: hidden;
+      background: #232526ee;
+      color: #ffd700;
+      text-align: center;
+      border-radius: 0.7em;
+      padding: 0.5em 1em;
+      position: absolute;
+      z-index: 10;
+      bottom: 110%;
+      right: 0;
+      left: 0;
+      margin: auto;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-size: 0.95em;
+      pointer-events: none;
+      box-shadow: 0 2px 8px #0006;
+    }
+    .tool-btn:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    @media (max-width: 700px) {
+      .tools-grid { flex-direction: column; gap: 0.7em; }
+      .tool-btn { min-width: 0; width: 100%; }
+    }
+    .tree-group {
+      margin-bottom: 1em;
+      border-radius: 0.7em;
+      background: #18191a;
+      box-shadow: 0 2px 8px #ffd70022;
+      padding: 0.7em 1em 0.7em 1em;
+    }
+    .tree-toggle {
+      background: none;
+      border: none;
+      color: #ffd700;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 0.5em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      transition: color 0.2s;
+    }
+    .tree-toggle:hover { color: #fffbe4; }
+    .tree-children { display: none; margin-right: 1.5em; }
+    .tree-group.open .tree-children { display: block; }
+    .tree-group .tree-toggle .arrow { transition: transform 0.2s; }
+    .tree-group.open .tree-toggle .arrow { transform: rotate(90deg);}
+    .main-label {
+      background:#ffd700;
+      color:#232526;
+      border-radius:0.5em;
+      padding:0.1em 0.5em;
+      font-size:0.8em;
+      margin-right:0.5em;
+      font-weight:bold;
+      letter-spacing:0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 1em;">
+      <a href="../index.html" style="background: #ffd700; color: #232526; padding: 0.8em 1.5em; border-radius: 2em; text-decoration: none; font-weight: bold; display: inline-block; transition: all 0.3s ease;">← חזרה לדף הבית החדש</a>
+    </div>
+    <h1>מרכז הכלים של בודק</h1>
+    
+    <div style="background: rgba(76, 175, 80, 0.2); border: 2px solid #4caf50; border-radius: 15px; padding: 20px; margin: 25px auto; max-width: 800px; text-align: center;">
+      <h3 style="color: #4caf50; margin: 0 0 15px 0;">🎉 כל הכלים פועלים!</h3>
+      <p style="margin: 0; color: #c9d1d9; font-size: 1.1rem; line-height: 1.6;">
+        <strong>מומלץ:</strong> בודק ת"ז מתקדם ומפענח ת"ז מתקדם ✅<br>
+        <strong>כל הכפתורים למטה עובדים:</strong> רק לחץ ובדוק! 🚀<br>
+        <strong>דפים חדשים:</strong> מפענח מתקדם נוסף וסורק מערכת מלאה
+      </p>
+    </div>
+    
+    <input class="search-box" id="searchBox" type="text" placeholder="חפש כלי לפי שם או קטגוריה...">
+
+    <!-- קטגוריה: מזהי זהות -->
+    <div class="category">
+      <div class="category-title">🆔 מזהי זהות</div>
+      <div class="tree-group open" id="tzTree">
+        <button class="tree-toggle" onclick="toggleTree('tzTree')">
+          <span class="arrow">▶</span> בודק תעודת זהות (כל הגרסאות)
+        </button>
+        <div class="tree-children">
+          <button class="tool-btn" onclick="window.open('../validators/tz-validator-html.html', '_blank')">
+            <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+            <span class="main-label">ראשי</span>
+            בודק תעודת זהות מתקדם (מומלץ!)
+            <span class="tooltip">בודק ת"ז - הגרסה המומלצת והמעודכנת ביותר</span>
+          </button>
+          <button class="tool-btn" onclick="window.open('../analyzers/id-analyzer-simple-working.html', '_blank')">
+            <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+            <span style="background:#4caf50;color:#fff;border-radius:0.5em;padding:0.1em 0.5em;font-size:0.8em;margin-right:0.5em;">חדש!</span>
+            מפענח תעודת זהות מתקדם
+            <span class="tooltip">מפענח ת"ז מתקדם עם פירוט מלא - עובד מעולה!</span>
+          </button>
+          <button class="tool-btn" onclick="window.open('../analyzers/super-id-analyzer-working.html', '_blank')">
+            <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+            מפענח סופר מתקדם
+            <span class="tooltip">מפענח ת"ז סופר מתקדם עם ממשק מודרני</span>
+          </button>
+          <button class="tool-btn" onclick="window.open('../super-id-analyzer-improved.html', '_blank')">
+            <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+            מפענח משופר (HTML)
+            <span class="tooltip">גרסה משופרת של המפענח</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- קטגוריה: מספרי רכב -->
+    <div class="category">
+      <div class="category-title">🚗 מספרי רכב</div>
+      <div class="tools-grid">
+        <button class="tool-btn" onclick="window.open('../validators/car-number-validator-ui.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק מספר רכב (UI)
+          <span class="tooltip">בודק תקינות מספר רכב - ממשק מתקדם</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../validators/car-number-validator-html.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק מספר רכב (HTML)
+          <span class="tooltip">בודק תקינות מספר רכב - גרסה בסיסית</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- קטגוריה: טלפון -->
+    <div class="category">
+      <div class="category-title">📞 מספרי טלפון</div>
+      <div class="tools-grid">
+        <button class="tool-btn" onclick="window.open('../validators/phone-number-validator.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק מספר טלפון + כשרות (מומלץ)
+          <span class="tooltip">בודק תקינות מספר טלפון ישראלי + בדיקת כשרות</span>
+        </button>
+                  <button class="tool-btn" onclick="window.open('../validators/phone-number-validator-1.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק מספר טלפון (גרסה 1 - ישן)
+          <span class="tooltip">בודק טלפון - גרסה ישנה, מומלץ להשתמש בגרסה החדשה עם כשרות</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../validators/phone-number-validator-artifact.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק מספר טלפון (ארטיפקט - ישן)
+          <span class="tooltip">בודק טלפון - גרסת ארטיפקט ישנה, מומלץ להשתמש בגרסה החדשה עם כשרות</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- קטגוריה: חשבונות בנק -->
+    <div class="category">
+      <div class="category-title">🏦 חשבונות בנק</div>
+      <div class="tools-grid">
+        <button class="tool-btn" onclick="window.open('../validators/bank-account-validator-interactive.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק חשבון בנק (אינטראקטיבי)
+          <span class="tooltip">בודק חשבון בנק עם ממשק מתקדם</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../validators/bank-account-validator.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק חשבון בנק (HTML)
+          <span class="tooltip">בודק חשבון בנק - גרסה בסיסית</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- קטגוריה: ברקוד, ח.פ., דרכון -->
+    <div class="category">
+      <div class="category-title">🏷️ ברקוד, ח.פ., דרכון</div>
+      <div class="tools-grid">
+        <button class="tool-btn" onclick="window.open('../validators/barcode-ean13-validator.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק ברקוד EAN13
+          <span class="tooltip">בודק תקינות ברקוד EAN13</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../validators/company-tax-id-validator.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק ח.פ./עוסק מורשה
+          <span class="tooltip">בודק מספר ח.פ./עוסק מורשה</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../validators/passport-validator-artifact.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          בודק דרכון
+          <span class="tooltip">בודק תקינות מספר דרכון</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- קטגוריה: כלים מתקדמים (React/TSX) -->
+    <div class="category">
+      <div class="category-title">⚛️ כלים מתקדמים (React)</div>
+      <div class="tools-grid">
+        <button class="tool-btn" onclick="alert('כלי זה דורש סביבת React/פיתוח. פנה למנהל המערכת או המר את הקובץ ל־HTML.');">
+          <img class="react-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React">
+          super-id-analyzer-fixed (React)
+          <span class="tooltip">כלי זה דורש סביבת React/פיתוח</span>
+        </button>
+        <button class="tool-btn" onclick="alert('כלי זה דורש סביבת React/פיתוח. פנה למנהל המערכת או המר את הקובץ ל־HTML.');">
+          <img class="react-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React">
+          super-id-analyzer.tsx
+          <span class="tooltip">כלי זה דורש סביבת React/פיתוח</span>
+        </button>
+        <button class="tool-btn" onclick="alert('כלי זה דורש סביבת React/פיתוח. פנה למנהל המערכת או המר את הקובץ ל־HTML.');">
+          <img class="react-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React">
+          id-analyzer-complete.tsx
+          <span class="tooltip">כלי זה דורש סביבת React/פיתוח</span>
+        </button>
+        <button class="tool-btn" onclick="alert('כלי זה דורש סביבת React/פיתוח. פנה למנהל המערכת או המר את הקובץ ל־HTML.');">
+          <img class="react-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React">
+          id-analyzer-final.tsx
+          <span class="tooltip">כלי זה דורש סביבת React/פיתוח</span>
+        </button>
+        <button class="tool-btn" onclick="alert('כלי זה דורש סביבת React/פיתוח. פנה למנהל המערכת או המר את הקובץ ל־HTML.');">
+          <img class="react-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React">
+          id-analyzer-simple.tsx
+          <span class="tooltip">כלי זה דורש סביבת React/פיתוח</span>
+        </button>
+        <button class="tool-btn" onclick="alert('כלי זה דורש סביבת React/פיתוח. פנה למנהל המערכת או המר את הקובץ ל־HTML.');">
+          <img class="react-icon" src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React">
+          id-analyzer.tsx
+          <span class="tooltip">כלי זה דורש סביבת React/פיתוח</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- דפים נוספים -->
+    <div class="category">
+      <div class="category-title">📄 דפים נוספים</div>
+      <div class="tools-grid">
+        <button class="tool-btn" onclick="window.open('homepage.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          דף הבית הישן
+          <span class="tooltip">דף הבית המקורי של הכלים</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('secure_homepage.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          דף בית מאובטח
+          <span class="tooltip">גרסה מאובטחת של דף הבית</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../super-id-analyzer-improved.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          המפענח המשופר (HTML)
+          <span class="tooltip">גרסה HTML משופרת של המפענח</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../analyzers/super-id-analyzer-advanced.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          מפענח מתקדם נוסף
+          <span class="tooltip">מפענח מתקדם נוסף לתעודת זהות</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../validators/id_scanner_full_system.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          סורק ת"ז מערכת מלאה
+          <span class="tooltip">מערכת סריקה מלאה לתעודת זהות</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../documentation/super-id-analyzer-guide.md', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/markdown/markdown-original.svg" alt="MD">
+          מדריך המפענח המתקדם
+          <span class="tooltip">מדריך מלא לכלי המפענח המתקדם</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../index.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          דף הבית החדש והמעודכן
+          <span class="tooltip">דף הבית החדש המומלץ לשימוש</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../validators/index.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          דף בודקים (רשימה מלאה)
+          <span class="tooltip">דף עם רשימה מלאה של כל הבודקים</span>
+        </button>
+        <button class="tool-btn" onclick="window.open('../analyzers/index.html', '_blank')">
+          <img class="html-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML">
+          דף מפענחים (רשימה מלאה)
+          <span class="tooltip">דף עם רשימה מלאה של כל המפענחים</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // חיפוש מהיר
+    const searchBox = document.getElementById('searchBox');
+    searchBox.addEventListener('input', function() {
+      const val = this.value.trim();
+      document.querySelectorAll('.tool-btn').forEach(btn => {
+        const text = btn.textContent;
+        if (text.includes(val) || btn.parentElement.parentElement.querySelector('.category-title').textContent.includes(val)) {
+          btn.style.display = '';
+        } else {
+          btn.style.display = 'none';
+        }
+      });
+      // הסתר קטגוריה אם אין בה כלים מוצגים
+      document.querySelectorAll('.category').forEach(cat => {
+        const visible = Array.from(cat.querySelectorAll('.tool-btn')).some(btn => btn.style.display !== 'none');
+        cat.style.display = visible ? '' : 'none';
+      });
+    });
+    // עץ כפתורים
+    function toggleTree(id) {
+      const group = document.getElementById(id);
+      group.classList.toggle('open');
+    }
+    // פתיחה אוטומטית של כל העצים בטעינה
+    document.querySelectorAll('.tree-group').forEach(g => g.classList.add('open'));
+  </script>
+</body>
+</html> 

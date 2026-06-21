@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המפענח הסודי המורחב - בודק ת"ז מתקדם</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+        
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { 
+          Shield, 
+          Scan, 
+          AlertTriangle, 
+          Database, 
+          Info, 
+          Brain, 
+          MapPin, 
+          Calendar, 
+          Users,
+          Lock,
+          Key,
+          FileSearch
+        } = lucide;
+
+        const SuperIDAnalyzer = () => {
+          const [idNumber, setIdNumber] = useState('');
+          const [analyzing, setAnalyzing] = useState(false);
+          const [results, setResults] = useState(null);
+          const [error, setError] = useState('');
+          const [activeTab, setActiveTab] = useState('overview');
+          const [showExplanation, setShowExplanation] = useState({});
+          const [showWelcome, setShowWelcome] = useState(true);
+          const [showSecurityWarning, setShowSecurityWarning] = useState(false);
+          
+          // Toggle explanation visibility
+          const toggleExplanation = (section) => {
+            setShowExplanation(prev => ({
+              ...prev,
+              [section]: !prev[section]
+            }));
+          };
+          
+          // Israeli ID validation check
+          const validateIsraeliID = (id) => {
+            if (!id || id.length !== 9 || !/^\d+$/.test(id)) {
+              return false;
+            }
+            
+            const digits = id.split('').map(digit => parseInt(digit));
+            let sum = 0;
+            
+            for (let i = 0; i < 9; i++) {
+              let digit = digits[i];
+              if (i % 2 === 0) {
+                sum += digit;
+              } else {
+                digit *= 2;
+                sum += digit > 9 ? digit - 9 : digit;
+              }
+            }
+            
+            return sum % 10 === 0;
+          };
+          
+          const analyzeID = () => {
+            if (!idNumber || idNumber.length !== 9 || !/^\d+$/.test(idNumber)) {
+              setError('יש להזין מספר תעודת זהות תקין בן 9 ספרות');
+              return;
+            }
+
+            const valid = validateIsraeliID(idNumber);
+            if (!valid) {
+              setError('מספר תעודת הזהות אינו תקין. אנא בדוק את המספר ונסה שוב.');
+              return;
+            }
+            
+            setError('');
+            setAnalyzing(true);
+            
+            // Simulate processing time
+            setTimeout(() => {
+              // Generate results based on ID number
+              const birthYear = 1980 + (parseInt(idNumber.substring(0, 3)) % 40);
+              const months = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
+              const birthMonth = months[parseInt(idNumber.substring(3, 5)) % 12];
+              
+              const zodiacMap = {
+                "ינואר": "גדי", "פברואר": "דלי", "מרץ": "דגים", "אפריל": "טלה",
+                "מאי": "שור", "יוני": "תאומים", "יולי": "סרטן", "אוגוסט": "אריה",
+                "ספטמבר": "בתולה", "אוקטובר": "מאזניים", "נובמבר": "עקרב", "דצמבר": "קשת"
+              };
+              
+              const result = {
+                id: idNumber,
+                age: {
+                  range: `נולד בשנות ה-${Math.floor(birthYear / 10) * 10}`,
+                  birthYear,
+                  birthMonth,
+                  zodiac: zodiacMap[birthMonth]
+                },
+                immigration: {
+                  status: parseInt(idNumber.substring(4, 6)) % 3 === 0 ? "עולה חדש" : 
+                          parseInt(idNumber.substring(4, 6)) % 3 === 1 ? "ישראל (דור שני)" :
+                          "ישראל (דור שלישי ומעלה)",
+                  origin: parseInt(idNumber.substring(4, 6)) % 3 === 0 ? "ברית המועצות לשעבר" :
+                         parseInt(idNumber.substring(4, 6)) % 3 === 1 ? "מרוקו" : "ישראל",
+                  period: parseInt(idNumber.substring(4, 6)) % 3 === 0 ? "שנות ה-90" :
+                         parseInt(idNumber.substring(4, 6)) % 3 === 1 ? "שנות ה-50" : "דור שלישי ומעלה"
+                },
+                personality: {
+                  traits: ["אנליטי", "לוגי", "סקרן"],
+                  mbti: ["INTJ", "INTP", "ENTJ", "ENTP"][parseInt(idNumber.substring(6, 8)) % 4]
+                },
+                security: {
+                  score: 60 + (parseInt(idNumber.substring(7, 9)) % 40),
+                  category: ["טכנולוגי", "מודיעין", "מבצעי"][parseInt(idNumber.substring(2, 3)) % 3],
+                  clearanceLevel: parseInt(idNumber.substring(7, 9)) > 50 ? "סודי (רמה 4)" : "מוגבל (רמה 2)"
+                }
+              };
+              
+              setResults(result);
+              setAnalyzing(false);
+              setShowWelcome(false);
+              
+              // Show security warning
+              setTimeout(() => {
+                setShowSecurityWarning(true);
+              }, 1000);
+            }, 2000);
+          };
+
+          const tabs = [
+            { id: 'overview', label: 'סקירה כללית', icon: Info },
+            { id: 'personal', label: 'נתונים אישיים', icon: Users },
+            { id: 'security', label: 'מידע אבטחה', icon: Shield },
+            { id: 'analysis', label: 'ניתוח מתקדם', icon: Brain }
+          ];
+
+          return (
+            <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-900 to-gray-900 text-white p-4">
+              <header className="text-center mb-6">
+                <div className="flex items-center justify-center">
+                  <h1 className="text-3xl font-bold mb-2">המפענח הסודי המורחב</h1>
+                  <Shield className="w-8 h-8 text-yellow-400 mr-2" />
+                </div>
+                <h2 className="text-xl opacity-80">חושף המידע הנסתר בתעודת הזהות הישראלית</h2>
+                <div className="flex items-center justify-center mt-2">
+                  <Shield className="w-5 h-5 text-yellow-400 mr-2" />
+                  <span className="text-yellow-400 text-sm">מוגדר: סודי ביותר</span>
+                </div>
+              </header>
+
+              <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700 shadow-lg">
+                <div className="flex items-center mb-4">
+                  <Database className="text-blue-400 w-5 h-5 mr-2" />
+                  <h3 className="text-lg font-medium">הזן מספר תעודת זהות לפענוח מקיף</h3>
+                </div>
+                
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={idNumber}
+                    onChange={(e) => setIdNumber(e.target.value.replace(/\D/g, '').substring(0, 9))}
+                    placeholder="הזן 9 ספרות"
+                    className="w-full p-3 bg-gray-900 border border-gray-700 rounded-lg text-white text-right placeholder-gray-500 focus:border-blue-500 focus:outline-none"
+                    maxLength={9}
+                    dir="rtl"
+                  />
+                  
+                  {error && (
+                    <div className="mt-2 text-red-400 flex items-center text-sm">
+                      <AlertTriangle className="w-4 h-4 mr-1" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+                  
+                  <button
+                    onClick={analyzeID}
+                    disabled={analyzing || idNumber.length !== 9}
+                    className={`mt-4 w-full py-3 rounded-lg font-bold flex items-center justify-center ${
+                      analyzing || idNumber.length !== 9 
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed' 
+                        : 'bg-blue-600 hover:bg-blue-500 text-white'
+                    }`}
+                  >
+                    {analyzing ? (
+                      <>
+                        <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                        <span>מפענח...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Scan className="w-5 h-5 mr-2" />
+                        <span>פענח מידע</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+              
+              {analyzing && (
+                <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700 animate-pulse">
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <h3 className="text-xl font-medium mb-2">מפענח מידע מסווג</h3>
+                    <div className="space-y-2 w-full">
+                      <div className="h-4 bg-gray-700 rounded w-3/4 mx-auto"></div>
+                      <div className="h-4 bg-gray-700 rounded w-1/2 mx-auto"></div>
+                      <div className="h-4 bg-gray-700 rounded w-5/6 mx-auto"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {results && !analyzing && (
+                <div className="space-y-6">
+                  {/* Security Warning */}
+                  {showSecurityWarning && (
+                    <div className="bg-red-900 border border-red-600 rounded-lg p-4 mb-6">
+                      <div className="flex items-center">
+                        <AlertTriangle className="w-6 h-6 text-red-400 mr-2" />
+                        <div>
+                          <h4 className="font-bold text-red-300">אזהרת אבטחה</h4>
+                          <p className="text-red-200 text-sm">המידע המוצג הוא סימולציה בלבד ואינו מבוסס על נתונים אמיתיים</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Navigation Tabs */}
+                  <div className="flex border-b border-gray-700 mb-6">
+                    {tabs.map(tab => {
+                      const IconComponent = tab.icon;
+                      return (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`flex items-center px-4 py-2 border-b-2 transition-colors ${
+                            activeTab === tab.id
+                              ? 'border-blue-500 text-blue-400'
+                              : 'border-transparent text-gray-400 hover:text-white'
+                          }`}
+                        >
+                          <IconComponent className="w-4 h-4 mr-2" />
+                          {tab.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Overview Tab */}
+                  {activeTab === 'overview' && (
+                    <div className="space-y-6">
+                      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div className="flex items-center mb-4">
+                          <FileSearch className="w-6 h-6 text-blue-400 mr-2" />
+                          <h3 className="text-xl font-bold">מידע בסיסי</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">מספר תעודת זהות</h4>
+                            <p className="text-xl font-mono">{results.id}</p>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-green-300 mb-2">סטטוס</h4>
+                            <p className="text-green-400 font-bold">✓ תקין</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Personal Data Tab */}
+                  {activeTab === 'personal' && (
+                    <div className="space-y-6">
+                      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div className="flex items-center mb-4">
+                          <Calendar className="w-6 h-6 text-green-400 mr-2" />
+                          <h3 className="text-xl font-bold">נתוני גיל ולידה</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">טווח גיל</h4>
+                            <p>{results.age.range}</p>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">שנת לידה משוערת</h4>
+                            <p>{results.age.birthYear}</p>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">חודש לידה משוער</h4>
+                            <p>{results.age.birthMonth}</p>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">מזל</h4>
+                            <p>{results.age.zodiac}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div className="flex items-center mb-4">
+                          <MapPin className="w-6 h-6 text-purple-400 mr-2" />
+                          <h3 className="text-xl font-bold">מידע עלייה ומוצא</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">סטטוס עלייה</h4>
+                            <p>{results.immigration.status}</p>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">מוצא משוער</h4>
+                            <p>{results.immigration.origin}</p>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">תקופת עלייה</h4>
+                            <p>{results.immigration.period}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Security Tab */}
+                  {activeTab === 'security' && (
+                    <div className="space-y-6">
+                      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div className="flex items-center mb-4">
+                          <Shield className="w-6 h-6 text-red-400 mr-2" />
+                          <h3 className="text-xl font-bold">פרופיל אבטחה</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">ציון אבטחה</h4>
+                            <div className="flex items-center">
+                              <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center mr-3">
+                                <span className="text-white font-bold">{results.security.score}</span>
+                              </div>
+                              <div className="flex-1">
+                                <div className="w-full bg-gray-600 rounded-full h-2">
+                                  <div 
+                                    className="bg-red-500 h-2 rounded-full" 
+                                    style={{width: `${results.security.score}%`}}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">קטגוריה</h4>
+                            <p>{results.security.category}</p>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">רמת סיווג</h4>
+                            <p>{results.security.clearanceLevel}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Analysis Tab */}
+                  {activeTab === 'analysis' && (
+                    <div className="space-y-6">
+                      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                        <div className="flex items-center mb-4">
+                          <Brain className="w-6 h-6 text-purple-400 mr-2" />
+                          <h3 className="text-xl font-bold">ניתוח אישיות</h3>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">תכונות אישיות</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {results.personality.traits.map((trait, index) => (
+                                <span key={index} className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
+                                  {trait}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="bg-gray-700 p-4 rounded-lg">
+                            <h4 className="font-semibold text-blue-300 mb-2">טיפוס MBTI</h4>
+                            <p className="text-2xl font-bold text-purple-400">{results.personality.mbti}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Welcome Message */}
+              {showWelcome && (
+                <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-center">
+                  <Shield className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold mb-2">ברוכים הבאים למפענח הסודי</h3>
+                  <p className="text-gray-300">הזן מספר תעודת זהות כדי לחשוף מידע נסתר ומתקדם</p>
+                  <p className="text-yellow-400 text-sm mt-2">⚠️ לשימוש לימודי בלבד - המידע הוא סימולציה</p>
+                </div>
+              )}
+            </div>
+          );
+        };
+
+        ReactDOM.render(<SuperIDAnalyzer />, document.getElementById('root'));
+    </script>
+</body>
+</html> 

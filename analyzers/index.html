@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מנתחים מתקדמים - מרכז הבודק</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: linear-gradient(135deg, #001d3d 0%, #232526 100%);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+      direction: rtl;
+      padding: 2em 1em;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 3em;
+    }
+    .header h1 {
+      font-size: 2.5em;
+      color: #ffd700;
+      margin-bottom: 0.5em;
+    }
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 215, 0, 0.9);
+      color: #232526;
+      padding: 15px 25px;
+      border-radius: 50px;
+      font-size: 1.1em;
+      font-weight: bold;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    }
+    .back-btn:hover {
+      background: rgba(255, 140, 0, 1);
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5em;
+    }
+    .tool-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      border-radius: 1em;
+      padding: 1.5em;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .tool-card:hover {
+      transform: translateY(-5px);
+      border-color: #ffd700;
+      box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+    }
+    .tool-card h3 {
+      color: #ffd700;
+      margin-bottom: 1em;
+      font-size: 1.3em;
+    }
+    .tool-card p {
+      color: #cdeeff;
+      margin-bottom: 1em;
+      line-height: 1.6;
+    }
+    .tool-card .features {
+      color: #ffd700;
+      font-size: 0.9em;
+      margin-bottom: 1.5em;
+      background: rgba(255, 215, 0, 0.1);
+      padding: 0.5em;
+      border-radius: 0.5em;
+    }
+    .tool-link {
+      background: #ffd700;
+      color: #232526;
+      padding: 0.8em 1.5em;
+      border-radius: 2em;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+    .tool-link:hover {
+      background: #ff8c00;
+      transform: scale(1.05);
+    }
+    .recommended {
+      position: relative;
+    }
+    .recommended::before {
+      content: "מומלץ";
+      position: absolute;
+      top: -0.5em;
+      right: -0.5em;
+      background: #ff8c00;
+      color: white;
+      padding: 0.3em 0.8em;
+      border-radius: 1em;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <a href="../index.html" class="back-btn">🏠 דף הבית הראשי</a>
+  
+  <div class="container">
+    <header class="header">
+      <h1>🔍 מנתחים מתקדמים</h1>
+      <p>כלים לניתוח מעמיק של תעודות זהות והפקת מידע רחב</p>
+      <div style="background: rgba(37, 99, 235, 0.2); border: 2px solid #2563eb; border-radius: 12px; padding: 20px; margin: 25px auto; max-width: 700px; text-align: center;">
+        <h3 style="color: #60a5fa; margin: 0 0 15px 0;">🔥 המנתח המומלץ נבדק ועובד מושלם!</h3>
+        <p style="margin: 0; color: #dbeafe; font-size: 1rem; line-height: 1.6;">
+          <strong>✅ מנתח ת"ז מתקדם:</strong> עובד בצורה מושלמת עם ניתוח גיל, מוצא, אישיות ואבטחה<br>
+          <strong>📅 נבדק:</strong> 25/01/2025 | <strong>סטטוס:</strong> עובד מעולה ומומלץ לשימוש
+        </p>
+      </div>
+    </header>
+
+    <div class="tools-grid">
+      <div class="tool-card recommended">
+        <h3>🚀 מנתח ת"ז סופר מתקדם (מתוקן)</h3>
+        <p>הגרסה המתוקנת והמשופרת ביותר למנתח תעודות זהות עם יכולות מתקדמות</p>
+        <div class="features">• ניתוח מלא • אבטחה מתקדמת • ממשק משתמש משופר • תיקוני באגים</div>
+        <a href="id-analyzer-simple-working.html" class="tool-link">פתח כלי</a>
+      </div>
+
+      <div class="tool-card">
+        <h3>🔬 מנתח ת"ז סופר מתקדם (ישן)</h3>
+        <p>גרסה ישנה - מומלץ להשתמש בגרסה המתוקנת למעלה</p>
+        <div class="features">• גרסה ישנה • עלולה להכיל באגים • לא מומלץ</div>
+        <a href="super-id-analyzer.tsx" class="tool-link">פתח כלי</a>
+      </div>
+
+      <div class="tool-card">
+        <h3>📋 מנתח ת"ז מלא</h3>
+        <p>מנתח מקיף עם כל הפונקציות הדרושות לניתוח תעודות זהות</p>
+        <div class="features">• ניתוח מקיף • ממשק ידידותי • תוצאות מפורטות</div>
+        <a href="id-analyzer-complete.tsx" class="tool-link">פתח כלי</a>
+      </div>
+
+      <div class="tool-card">
+        <h3>✅ מנתח ת"ז פיינל</h3>
+        <p>גרסה סופית של המנתח עם התכונות הבסיסיות והחיוניות</p>
+        <div class="features">• פשוט לשימוש • מהיר • יעיל</div>
+        <a href="id-analyzer-final.tsx" class="tool-link">פתח כלי</a>
+      </div>
+
+      <div class="tool-card">
+        <h3>🎯 מנתח ת"ז פשוט</h3>
+        <p>מנתח בסיסי וקל לשימוש למשתמשים חדשים</p>
+        <div class="features">• פשוט • ברור • מתחילים</div>
+        <a href="id-analyzer-simple.tsx" class="tool-link">פתח כלי</a>
+      </div>
+
+      <div class="tool-card">
+        <h3>⚡ מנתח ת"ז בסיסי</h3>
+        <p>מנתח תעודות זהות בסיסי עם פונקציות ליבה</p>
+        <div class="features">• בסיסי • מהיר • יציב</div>
+        <a href="id-analyzer.tsx" class="tool-link">פתח כלי</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

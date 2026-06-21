@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בודק תקינות מספר טלפון ישראלי + בדיקת כשרות - עודכן 25/01/2025</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+        }
+        h1 {
+            color: #003366;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 15px;
+            font-size: 2rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        input {
+            width: calc(100% - 22px);
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #003366;
+            box-shadow: 0 0 5px rgba(0, 51, 102, 0.3);
+        }
+        button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 15px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        button:hover {
+            background-color: #004080;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 5px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .success {
+            background-color: #dff0d8;
+            border-right: 4px solid #3c763d;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            border-right: 4px solid #a94442;
+            color: #a94442;
+        }
+        .details {
+            margin-top: 25px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .step {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #fff;
+            border-radius: 3px;
+            border-right: 3px solid #003366;
+            padding-right: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .step:hover {
+            transform: translateX(-5px);
+        }
+        .highlight {
+            font-weight: bold;
+            color: #003366;
+        }
+        .error-item {
+            color: #a94442;
+            margin-bottom: 8px;
+            padding-right: 15px;
+            position: relative;
+        }
+        .error-item::before {
+            content: "•";
+            position: absolute;
+            right: 0;
+            color: #a94442;
+        }
+        .help-text {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            border-right: 4px solid #5bc0de;
+        }
+        .help-text h3 {
+            color: #31708f;
+            margin-top: 0;
+        }
+        .help-text ol {
+            padding-right: 20px;
+        }
+        .help-text li {
+            margin-bottom: 8px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .digit-display {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 25px;
+        }
+        .digit-box {
+            width: 30px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 20px;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+        .digit-box.filled {
+            border-color: #003366;
+            background-color: #e8f4f8;
+        }
+        .digit-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 2px;
+        }
+        .highlight-row {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-right: 3px solid #003366;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .format-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .format-option {
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .format-option:hover {
+            background-color: #e8f4f8;
+        }
+        .format-option.selected {
+            background-color: #003366;
+            color: white;
+            border-color: #003366;
+        }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #003366, #004080);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 51, 102, 0.4);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background: linear-gradient(135deg, #004080, #0056b3);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 51, 102, 0.5);
+        }
+    </style>
+  </head>
+  <body>
+          <a href="../index.html" class="back-button">
+        🏠 דף הבית הראשי
+    </a>
+      
+              <div class="container">
+          <h1>בודק תקינות מספר טלפון ישראלי + בדיקת כשרות</h1>
+        
+        <div class="format-selector">
+            <div class="format-option selected" data-format="mobile">טלפון נייד</div>
+            <div class="format-option" data-format="landline">טלפון נייח</div>
+            <div class="format-option" data-format="international">פורמט בינלאומי</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="phoneNumber">הכנס מספר טלפון:</label>
+            <input type="text" id="phoneNumber" placeholder="לדוגמה: 0501234567" maxlength="15">
+        </div>
+        
+        <div id="digitDisplay" class="digit-display">
+            <!-- כאן יוצגו הספרות בזמן אמת -->
+        </div>
+        
+        <button id="checkButton">בדוק תקינות</button>
+        
+        <div id="result" class="result">
+            <!-- כאן יוצגו תוצאות הבדיקה -->
+        </div>
+        
+        <div id="details" class="details" style="display: none;">
+            <!-- כאן יוצגו פרטי החישוב -->
+        </div>
+        
+        <div class="help-text">
+            <h3>כיצד בודקים תקינות של מספר טלפון ישראלי?</h3>
+            <p>מספרי טלפון בישראל צריכים להיות בפורמטים הבאים:</p>
+            <ol>
+                <li><strong>טלפונים ניידים:</strong> מתחילים ב-05 ואחריהם 8 ספרות נוספות (סה"כ 10 ספרות)</li>
+                <li><strong>טלפונים נייחים:</strong> מתחילים ב-0 ואחריהם 8 ספרות נוספות (סה"כ 9 ספרות)</li>
+                <li><strong>פורמט בינלאומי:</strong> מתחיל ב-+972 ואחריו מספר הטלפון ללא ה-0 שבהתחלה</li>
+            </ol>
+            
+            <h3>📱 מה זה "מספר כשר"? (למספרי נייד בלבד)</h3>
+            <div style="background-color: #f0f8ff; border-right: 4px solid #007acc; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                <p><strong>מספר כשר</strong> הוא מספר טלפון נייד שנועד לציבור החרדי ומתאפיין ב:</p>
+                <ul style="padding-right: 25px; line-height: 1.8; margin: 10px 0;">
+                    <li>🚫 <strong>ללא אינטרנט:</strong> אין אפשרות לגלוש ברשת האינטרנט</li>
+                    <li>📝 <strong>ללא SMS:</strong> אין אפשרות לשלוח או לקבל הודעות טקסט</li>
+                    <li>📞 <strong>שיחות בלבד:</strong> המכשיר מיועד לשיחות קוליות בלבד</li>
+                    <li>🛡️ <strong>פיקוח דתי:</strong> החברות מתחייבות לפיקוח על התכנים</li>
+                    <li>💰 <strong>מחירים מוזלים:</strong> לרוב זולים יותר מתוכניות רגילות</li>
+                </ul>
+                
+                <h4 style="color: #007acc; margin: 20px 0 10px 0;">🔍 הקידומות הכשרות הידועות:</h4>
+                <div style="background: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: #e8f4f8;">
+                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">חברה</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">קידומת כשרה</td>
+                            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">דוגמה</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">פלאפון</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">050-40, 050-41</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">0504012345</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 8px; border: 1px solid #ddd;">סלקום</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">052-71, 052-76</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">0527123456</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">פרטנר</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">054-84</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">0548412345</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 8px; border: 1px solid #ddd;">הוט מובייל</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">053-31, 053-32</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">0533123456</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">רמי לוי</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">055-66</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">0556612345</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 8px; border: 1px solid #ddd;">גולן טלקום</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">058-32, 058-33</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">0583212345</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">019 מובייל</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">019-25</td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">0192512345</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                    <h4 style="color: #856404; margin: 0 0 10px 0;">⚠️ הערות חשובות:</h4>
+                    <ul style="padding-right: 20px; color: #856404; margin: 0;">
+                        <li>הבדיקה מבוססת על הקידומת בלבד ואינה מבטיחה שהמספר אכן כשר</li>
+                        <li>חברות הסלולר יכולות לשנות קידומות או להוסיף חדשות</li>
+                        <li>מומלץ לוודא עם הספק את סטטוס הכשרות של המספר</li>
+                        <li>גם במספר כשר ייתכנו שירותים נוספים שצריך לחסום ידנית</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 בודק תקינות מספרי טלפון ישראליים | פותח עבור מטרות הדגמה בלבד</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.getElementById('phoneNumber');
+            const checkButton = document.getElementById('checkButton');
+            const resultDiv = document.getElementById('result');
+            const detailsDiv = document.getElementById('details');
+            const digitDisplayDiv = document.getElementById('digitDisplay');
+            const formatOptions = document.querySelectorAll('.format-option');
+            
+            // הגדרות פורמטים
+            const formats = {
+                'mobile': {
+                    length: 10,
+                    displayFormat: "XXX-XXXXXXX",
+                    separatorAfter: [3]
+                },
+                'landline': {
+                    length: 9,
+                    displayFormat: "XX-XXXXXXX",
+                    separatorAfter: [2]
+                },
+                'international': {
+                    length: 13,
+                    displayFormat: "+972-XX-XXXXXXX",
+                    separatorAfter: [5, 8]
+                }
+            };
+            
+            let currentFormat = 'mobile';
+            
+            // יצירת תצוגת ספרות ראשונית
+            createDigitDisplay();
+            
+            // הוספת אירועים
+            checkButton.addEventListener('click', validatePhoneNumber);
+            
+            phoneInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') validatePhoneNumber();
+            });
+            
+            phoneInput.addEventListener('input', function() {
+                // סינון תווים לא רצויים
+                if (currentFormat === 'international') {
+                    this.value = this.value.replace(/[^0-9+ -]/g, '');
+                } else {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                }
+                
+                updateDigitDisplay(this.value);
+            });
+            
+            // מעבר בין פורמטים
+            formatOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelector('.format-option.selected').classList.remove('selected');
+                    this.classList.add('selected');
+                    
+                    currentFormat = this.dataset.format;
+                    phoneInput.value = '';
+                    
+                    // עדכון תצוגת ספרות
+                    createDigitDisplay();
+                    
+                    // ניקוי תוצאות קודמות
+                    resultDiv.style.display = 'none';
+                    detailsDiv.style.display = 'none';
+                });
+            });
+            
+            // פונקציה ליצירת תצוגת ספרות
+            function createDigitDisplay() {
+                digitDisplayDiv.innerHTML = '';
+                const format = formats[currentFormat];
+                
+                let digitCount = 0;
+                
+                // יצירת תצוגת ספרות לפי הפורמט
+                for (let i = 0; i < format.length; i++) {
+                    // בדיקה אם צריך להוסיף מפריד
+                    if (format.separatorAfter && format.separatorAfter.includes(i)) {
+                        const separator = document.createElement('div');
+                        separator.className = 'digit-separator';
+                        separator.textContent = '-';
+                        digitDisplayDiv.appendChild(separator);
+                    }
+                    
+                    const digitBox = document.createElement('div');
+                    digitBox.className = 'digit-box';
+                    digitDisplayDiv.appendChild(digitBox);
+                    digitCount++;
+                }
+            }
+            
+            // פונקציה לעדכון תצוגת ספרות
+            function updateDigitDisplay(value) {
+                const digitBoxes = digitDisplayDiv.querySelectorAll('.digit-box');
+                
+                // איפוס
+                digitBoxes.forEach(box => {
+                    box.textContent = '';
+                    box.classList.remove('filled');
+                });
+                
+                // ניקוי ערך
+                let cleanValue = value;
+                if (currentFormat === 'international') {
+                    // הסרת תווים מיוחדים
+                    cleanValue = value.replace(/[+ -]/g, '');
+                }
+                
+                // עדכון הספרות
+                let displayIndex = 0;
+                for (let i = 0; i < cleanValue.length && displayIndex < digitBoxes.length; i++) {
+                    digitBoxes[displayIndex].textContent = cleanValue[i];
+                    digitBoxes[displayIndex].classList.add('filled');
+                    displayIndex++;
+                }
+            }
+            
+            // פונקציה לבדיקת תקינות
+            function validatePhoneNumber() {
+                const phoneNumber = phoneInput.value.trim();
+                
+                if (phoneNumber === '') {
+                    showError('נא להזין מספר טלפון');
+                    return;
+                }
+                
+                // בדיקת תקינות המספר
+                const cleanNumber = phoneNumber.replace(/[+ -]/g, '');
+                let isValid = false;
+                let message = '';
+                
+                switch (currentFormat) {
+                    case 'mobile':
+                        isValid = /^05\d{8}$/.test(cleanNumber);
+                        message = isValid ? 'מספר הטלפון הנייד תקין' : 'מספר טלפון נייד חייב להתחיל ב-05 ולהכיל 10 ספרות';
+                        break;
+                    case 'landline':
+                        isValid = /^0[2-9]\d{7}$/.test(cleanNumber);
+                        message = isValid ? 'מספר הטלפון הנייח תקין' : 'מספר טלפון נייח חייב להתחיל ב-0 ולהכיל 9 ספרות';
+                        break;
+                    case 'international':
+                        isValid = /^\+?972\d{8,9}$/.test(cleanNumber);
+                        message = isValid ? 'מספר הטלפון הבינלאומי תקין' : 'מספר טלפון בינלאומי חייב להתחיל ב-972+';
+                        break;
+                }
+                
+                if (isValid) {
+                    showSuccess(message);
+                    showDetails(cleanNumber);
+                } else {
+                    showError(message);
+                }
+            }
+            
+            // פונקציה להצגת הודעת הצלחה
+            function showSuccess(message) {
+                resultDiv.className = 'result success';
+                
+                let icon = currentFormat === 'mobile' ? '📱' : '☎️';
+                if (currentFormat === 'international') {
+                    icon = '🌐';
+                }
+                
+                resultDiv.innerHTML = `<h3>${icon} ${message}</h3>`;
+                resultDiv.style.display = 'block';
+            }
+            
+            // פונקציה להצגת הודעת שגיאה
+            function showError(message) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<h3>✗ ${message}</h3>`;
+                resultDiv.style.display = 'block';
+                detailsDiv.style.display = 'none';
+            }
+            
+            // פונקציה להצגת פרטים נוספים
+            function showDetails(number) {
+                let detailsHtml = '<h3>פרטי המספר:</h3>';
+                
+                let formattedNumber = '';
+                let internationalNumber = '';
+                let info = '';
+                let kosherInfo = '';
+                
+                switch (currentFormat) {
+                    case 'mobile':
+                        formattedNumber = number.substring(0, 3) + '-' + number.substring(3);
+                        internationalNumber = '+972-' + number.substring(1, 3) + '-' + number.substring(3);
+                        info = getProviderInfo(number.substring(0, 3));
+                        
+                        // בדיקת כשרות
+                        const kosherResult = checkKosherNumber(number);
+                        if (kosherResult.isKosher === true) {
+                            kosherInfo = `<div class="step" style="background-color: #e8f5e8; border-right-color: #4caf50;"><span class="highlight" style="color: #2e7d32;">✅ מספר כשר:</span> ${kosherResult.message} (קידומת: ${kosherResult.prefix})</div>`;
+                        } else if (kosherResult.isKosher === false) {
+                            kosherInfo = `<div class="step" style="background-color: #ffeaa7; border-right-color: #f39c12;"><span class="highlight" style="color: #d68910;">⚠️ לא מזוהה ככשר:</span> ${kosherResult.message} (קידומת: ${kosherResult.prefix})</div>`;
+                        }
+                        break;
+                    case 'landline':
+                        formattedNumber = number.substring(0, 2) + '-' + number.substring(2);
+                        internationalNumber = '+972-' + number.substring(1, 2) + '-' + number.substring(2);
+                        info = getAreaInfo(number.substring(0, 2));
+                        kosherInfo = '<div class="step" style="background-color: #e3f2fd; border-right-color: #2196f3;"><span class="highlight" style="color: #1976d2;">ℹ️ בדיקת כשרות:</span> זמינה רק עבור מספרי נייד</div>';
+                        break;
+                    case 'international':
+                        if (number.startsWith('+')) number = number.substring(1);
+                        if (number.substring(3, 4) === '5') {
+                            // נייד
+                            const mobileNumber = '0' + number.substring(3);
+                            formattedNumber = '0' + number.substring(3, 5) + '-' + number.substring(5);
+                            internationalNumber = '+' + number.substring(0, 3) + '-' + number.substring(3, 5) + '-' + number.substring(5);
+                            info = getProviderInfo('0' + number.substring(3, 5));
+                            
+                            // בדיקת כשרות עבור נייד בינלאומי
+                            const kosherResult = checkKosherNumber(mobileNumber);
+                            if (kosherResult.isKosher === true) {
+                                kosherInfo = `<div class="step" style="background-color: #e8f5e8; border-right-color: #4caf50;"><span class="highlight" style="color: #2e7d32;">✅ מספר כשר:</span> ${kosherResult.message} (קידומת: ${kosherResult.prefix})</div>`;
+                            } else if (kosherResult.isKosher === false) {
+                                kosherInfo = `<div class="step" style="background-color: #ffeaa7; border-right-color: #f39c12;"><span class="highlight" style="color: #d68910;">⚠️ לא מזוהה ככשר:</span> ${kosherResult.message} (קידומת: ${kosherResult.prefix})</div>`;
+                            }
+                        } else {
+                            // נייח
+                            formattedNumber = '0' + number.substring(3, 4) + '-' + number.substring(4);
+                            internationalNumber = '+' + number.substring(0, 3) + '-' + number.substring(3, 4) + '-' + number.substring(4);
+                            info = getAreaInfo('0' + number.substring(3, 4));
+                            kosherInfo = '<div class="step" style="background-color: #e3f2fd; border-right-color: #2196f3;"><span class="highlight" style="color: #1976d2;">ℹ️ בדיקת כשרות:</span> זמינה רק עבור מספרי נייד</div>';
+                        }
+                        break;
+                }
+                
+                detailsHtml += `
+                    <div class="highlight-row">
+                        <div class="step"><span class="highlight">פורמט מקומי:</span> ${formattedNumber}</div>
+                        <div class="step"><span class="highlight">פורמט בינלאומי:</span> ${internationalNumber}</div>
+                        <div class="step"><span class="highlight">מידע נוסף:</span> ${info}</div>
+                        ${kosherInfo}
+                    </div>
+                `;
+                
+                detailsDiv.innerHTML = detailsHtml;
+                detailsDiv.style.display = 'block';
+            }
+            
+            // פונקציות עזר
+            function getProviderInfo(prefix) {
+                const providers = {
+                    '050': 'פלאפון',
+                    '052': 'סלקום',
+                    '053': 'הוט מובייל',
+                    '054': 'פרטנר',
+                    '055': 'גולן טלקום',
+                    '056': 'רמי לוי',
+                    '058': 'אקספון',
+                    '059': 'ספקים וירטואליים'
+                };
+                
+                return providers[prefix] || 'ספק לא מזוהה';
+            }
+
+            function checkKosherNumber(number) {
+                // רק עבור מספרי נייד
+                if (!number.startsWith('05')) {
+                    return { isKosher: null, message: 'בדיקת כשרות זמינה רק למספרי נייד' };
+                }
+
+                // הגדרת קידומות כשרות
+                const kosherPrefixes = {
+                    '05040': 'פלאפון - כשר',
+                    '05041': 'פלאפון - כשר',
+                    '05271': 'סלקום - כשר',
+                    '05276': 'סלקום - כשר',
+                    '05484': 'פרטנר - כשר',
+                    '05331': 'הוט מובייל - כשר',
+                    '05332': 'הוט מובייל - כשר',
+                    '05566': 'רמי לוי - כשר',
+                    '05832': 'גולן טלקום - כשר',
+                    '05833': 'גולן טלקום - כשר',
+                    '01925': '019 מובייל - כשר'
+                };
+
+                // בדיקת קידומת של 5 ספרות
+                const prefix5 = number.substring(0, 5);
+                if (kosherPrefixes[prefix5]) {
+                    return { 
+                        isKosher: true, 
+                        message: kosherPrefixes[prefix5],
+                        prefix: prefix5
+                    };
+                }
+
+                // בדיקת קידומת של 4 ספרות עבור 019
+                if (number.startsWith('019')) {
+                    const prefix4 = number.substring(0, 5);
+                    if (prefix4 === '01925') {
+                        return { 
+                            isKosher: true, 
+                            message: '019 מובייל - כשר',
+                            prefix: prefix4
+                        };
+                    }
+                }
+
+                // אם לא נמצאה קידומת כשרה
+                const providerName = getProviderInfo(number.substring(0, 3));
+                return { 
+                    isKosher: false, 
+                    message: `${providerName} - לא כשר או לא מזוהה ככשר`,
+                    prefix: number.substring(0, 5)
+                };
+            }
+            
+            function getAreaInfo(areaCode) {
+                const areas = {
+                    '02': 'ירושלים והסביבה',
+                    '03': 'תל אביב והמרכז',
+                    '04': 'חיפה והצפון',
+                    '08': 'באר שבע והדרום',
+                    '09': 'השרון'
+                };
+                
+                return areas[areaCode] || 'אזור לא מזוהה';
+            }
+        });
+    </script>
+</body>
+</html>

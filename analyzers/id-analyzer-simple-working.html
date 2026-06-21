@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מפענח תעודת זהות מתקדם - גרסה עובדת ומומלצת 25/01/2025</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100;300;400;500;700;900&display=swap');
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: rgba(30, 41, 59, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-weight: 300;
+            opacity: 0.9;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 215, 0, 0.9);
+            color: #232526;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 140, 0, 1);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .warning {
+            background: rgba(202, 138, 4, 0.2);
+            border: 1px solid #ca8a04;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            color: #fbbf24;
+        }
+        
+        .input-section {
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 1.1rem;
+        }
+        
+        .id-input {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.8rem;
+            text-align: center;
+            letter-spacing: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .id-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .check-button {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+        
+        .check-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(37, 99, 235, 0.4);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .results-section {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .status-valid {
+            background: rgba(22, 163, 74, 0.2);
+            border: 1px solid #16a34a;
+            color: #4ade80;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .status-invalid {
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid #dc2626;
+            color: #f87171;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            background: rgba(51, 65, 85, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-card h3 {
+            color: #fbbf24;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .result-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .result-item h4 {
+            color: #60a5fa;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .result-item p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .id-input {
+                font-size: 1.4rem;
+                letter-spacing: 4px;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-btn">
+                🏠 דף הבית הראשי
+            </a>
+            <h1><i class="fas fa-shield-alt"></i> מפענח תעודת זהות מתקדם</h1>
+            <p class="subtitle">חושף מידע נסתר ומתקדם מתעודת זהות ישראלית - גרסה עובדת</p>
+        </div>
+        
+        <div class="content">
+            <div class="warning">
+                <h4><i class="fas fa-exclamation-triangle"></i> הודעת אבטחה</h4>
+                <p>המידע המוצג הוא סימולציה בלבד ואינו מבוסס על נתונים אמיתיים. לשימוש לימודי בלבד.</p>
+            </div>
+            
+            <div class="input-section">
+                <label for="idNumber" class="input-label">
+                    <i class="fas fa-id-card"></i> הזן מספר תעודת זהות (9 ספרות)
+                </label>
+                <input type="text" id="idNumber" class="id-input" placeholder="123456789" maxlength="9">
+                <button id="analyzeBtn" class="check-button">
+                    <i class="fas fa-search"></i> פענח מידע מתקדם
+                </button>
+            </div>
+            
+            <div id="loadingSection" class="loading">
+                <div class="spinner"></div>
+                <h3>מפענח מידע מסווג...</h3>
+                <p>מעבד אלגוריתמים מתקדמים</p>
+            </div>
+            
+            <div id="resultsSection" class="results-section">
+                <div id="statusResult"></div>
+                
+                <div class="result-card">
+                    <h3><i class="fas fa-info-circle"></i> מידע בסיסי</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <h4>מספר תעודת זהות</h4>
+                            <p id="idDisplay">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>גיל נוכחי</h4>
+                            <p id="currentAge">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>רמת אמינות</h4>
+                            <p>95%</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>סטטוס אימות</h4>
+                            <p>מאומת</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3><i class="fas fa-calendar-alt"></i> נתוני גיל ולידה</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <h4>טווח גיל</h4>
+                            <p id="ageRange">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>שנת לידה משוערת</h4>
+                            <p id="birthYear">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>חודש לידה משוער</h4>
+                            <p id="birthMonth">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>מזל אסטרולוגי</h4>
+                            <p id="zodiacSign">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3><i class="fas fa-globe"></i> מידע עלייה ומוצא</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <h4>סטטוס עלייה</h4>
+                            <p id="immigrationStatus">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>מוצא משוער</h4>
+                            <p id="estimatedOrigin">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>תקופת עלייה</h4>
+                            <p id="immigrationPeriod">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>דור</h4>
+                            <p id="generation">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3><i class="fas fa-shield-alt"></i> פרופיל אבטחה</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <h4>ציון אבטחה</h4>
+                            <p id="securityScore">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>קטגוריה</h4>
+                            <p id="securityCategory">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>רמת סיווג</h4>
+                            <p id="clearanceLevel">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>המלצה</h4>
+                            <p id="recommendation">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3><i class="fas fa-brain"></i> ניתוח אישיות</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <h4>טיפוס MBTI</h4>
+                            <p id="mbtiType">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>תכונות עיקריות</h4>
+                            <p id="personalityTraits">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>נקודת חוזק</h4>
+                            <p id="strengthArea">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>כישורים מומלצים</h4>
+                            <p id="recommendedSkills">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <h3><i class="fas fa-map-marker-alt"></i> מידע גיאוגרפי</h3>
+                    <div class="result-grid">
+                        <div class="result-item">
+                            <h4>אזור משוער</h4>
+                            <p id="estimatedRegion">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>עיר משוערת</h4>
+                            <p id="estimatedCity">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>רמת ודאות</h4>
+                            <p id="locationProbability">-</p>
+                        </div>
+                        <div class="result-item">
+                            <h4>מקום הנפקה</h4>
+                            <p id="issuanceLocation">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- הסבר על אלגוריתם לוהן -->
+                <div class="result-card" style="margin-top: 30px;">
+                    <h3><i class="fas fa-graduation-cap"></i> איך עובד אלגוריתם בדיקת תעודת זהות (לוהן)?</h3>
+                    <div style="text-align: right; line-height: 1.6;">
+                        <p style="margin-bottom: 15px;">תעודות זהות ישראליות מבוססות על <strong>אלגוריתם לוהן (Luhn Algorithm)</strong> לבדיקת תקינות:</p>
+                        
+                        <div style="background: rgba(37, 99, 235, 0.2); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                            <h4 style="color: #60a5fa; margin-bottom: 10px;">שלבי הבדיקה:</h4>
+                            <ol style="margin-right: 20px;">
+                                <li><strong>מקום זוגי (1, 3, 5, 7):</strong> כפל ב-1 (השאר כמו שזה)</li>
+                                <li><strong>מקום אי-זוגי (2, 4, 6, 8):</strong> כפל ב-2</li>
+                                <li><strong>אם התוצאה > 9:</strong> חסר 9 (למשל: 16 → 16-9 = 7)</li>
+                                <li><strong>חבר את כל התוצאות של 8 הספרות הראשונות</strong></li>
+                                <li><strong>ספרת הביקורת:</strong> המספר שמשלים את הסכום ל-10 הקרוב</li>
+                            </ol>
+                        </div>
+                        
+                        <div style="background: rgba(202, 138, 4, 0.2); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                            <h4 style="color: #fbbf24; margin-bottom: 10px;">דוגמה:</h4>
+                            <p style="font-family: monospace; font-size: 1.1em; text-align: center; direction: ltr;">
+                                ID: <span style="background: #4ade80; color: black; padding: 2px;">1 2 3 4 5 6 7 8</span> <span style="background: #dc2626; color: white; padding: 2px;">?</span><br>
+                                ×1 ×2 ×1 ×2 ×1 ×2 ×1 ×2<br>
+                                = 1+4+3+8+5+12+7+16<br>
+                                = 1+4+3+8+5+(12-9)+7+(16-9)<br>
+                                = 1+4+3+8+5+3+7+7 = 38<br>
+                                Check digit = 40-38 = <span style="background: #4ade80; color: black; padding: 2px;">2</span>
+                            </p>
+                        </div>
+                        
+                        <p style="margin-top: 15px; font-size: 0.9em; color: #94a3b8;">
+                            <i class="fas fa-info-circle"></i> 
+                            אלגוריתם זה מבטיח זיהוי שגיאות רוב שגיאות הקלדה ושגיאות החלפת ספרות סמוכות.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Israeli ID validation function
+        function validateIsraeliID(id) {
+            if (!id || id.length !== 9 || !/^\d+$/.test(id)) {
+                return false;
+            }
+            
+            const digits = id.split('').map(digit => parseInt(digit));
+            let sum = 0;
+            
+            // Calculate checksum for first 8 digits
+            for (let i = 0; i < 8; i++) {
+                let digit = digits[i];
+                if (i % 2 === 0) {
+                    sum += digit;
+                } else {
+                    digit *= 2;
+                    sum += digit > 9 ? digit - 9 : digit;
+                }
+            }
+            
+            // Check if the 9th digit (check digit) makes the sum divisible by 10
+            const checkDigit = (10 - (sum % 10)) % 10;
+            return checkDigit === digits[8];
+        }
+        
+        // Generate analysis results
+        function generateAnalysis(idNumber) {
+            const birthYear = 1980 + (parseInt(idNumber.substring(0, 3)) % 40);
+            const currentYear = new Date().getFullYear();
+            const age = currentYear - birthYear;
+            
+            const months = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
+            const birthMonth = months[parseInt(idNumber.substring(3, 5)) % 12];
+            
+            const zodiacMap = {
+                "ינואר": "♑ גדי", "פברואר": "♒ דלי", "מרץ": "♓ דגים", "אפריל": "♈ טלה",
+                "מאי": "♉ שור", "יוני": "♊ תאומים", "יולי": "♋ סרטן", "אוגוסט": "♌ אריה",
+                "ספטמבר": "♍ בתולה", "אוקטובר": "♎ מאזניים", "נובמבר": "♏ עקרב", "דצמבר": "♐ קשת"
+            };
+            
+            const immigrationStatuses = ["עולה חדש", "ישראל (דור שני)", "ישראל (דור שלישי ומעלה)"];
+            const origins = ["ברית המועצות לשעבר", "מרוקו", "ישראל"];
+            const periods = ["שנות ה-90", "שנות ה-50", "דור שלישי ומעלה"];
+            const generations = ["דור ראשון (עולה)", "דור שני", "דור שלישי ומעלה"];
+            
+            const personalities = ["INTJ - האדריכל", "INTP - ההוגה", "ENTJ - המפקד", "ENTP - הדיונר"];
+            const traits = [
+                "אנליטי, לוגי, סקרן",
+                "יצירתי, חברותי, אמפתי", 
+                "מנהיג, נחוש, יעיל",
+                "דיפלומטי, מגן, אמין"
+            ];
+            const strengths = ["יצירתיות", "מנהיגות", "פתרון בעיות", "תקשורת"];
+            const skills = ["טכנולוגיה", "ניהול", "חינוך", "אמנות"];
+            
+            const securityCategories = ["טכנולוגי", "מודיעין", "מבצעי"];
+            const clearanceLevels = ["סודי (רמה 4)", "מוגבל (רמה 2)", "רגיל (רמה 1)"];
+            const recommendations = [
+                "מומלץ לתפקידים טכניים", 
+                "מתאים לתפקידי ניהול",
+                "מומלץ למחקר ופיתוח"
+            ];
+            
+            const regions = ["מרכז", "צפון", "דרום", "ירושלים"];
+            const cities = ["תל אביב", "חיפה", "באר שבע", "ירושלים"];
+            const locations = ["משרד הפנים - תל אביב", "משרד הפנים - חיפה", "משרד הפנים - באר שבע", "משרד הפנים - ירושלים"];
+            
+            // Select values based on ID number patterns
+            const idx1 = parseInt(idNumber.substring(4, 6)) % 3;
+            const idx2 = parseInt(idNumber.substring(6, 8)) % 4;
+            const idx3 = parseInt(idNumber.substring(2, 3)) % 3;
+            const idx4 = parseInt(idNumber.substring(1, 2)) % 4;
+            const idx5 = parseInt(idNumber.substring(5, 7)) % 4;
+            
+            const securityScore = 60 + (parseInt(idNumber.substring(7, 9)) % 40);
+            const locationProbability = 70 + (parseInt(idNumber.substring(8, 9)) % 30);
+            
+            return {
+                id: idNumber,
+                age: age,
+                ageRange: `נולד בשנות ה-${Math.floor(birthYear / 10) * 10}`,
+                birthYear: birthYear,
+                birthMonth: birthMonth,
+                zodiac: zodiacMap[birthMonth],
+                immigrationStatus: immigrationStatuses[idx1],
+                origin: origins[idx1],
+                period: periods[idx1],
+                generation: generations[idx1],
+                mbti: personalities[idx2],
+                traits: traits[idx2],
+                strength: strengths[idx5],
+                skills: skills[idx5],
+                securityScore: securityScore,
+                securityCategory: securityCategories[idx3],
+                clearanceLevel: clearanceLevels[idx3],
+                recommendation: recommendations[idx3],
+                region: regions[idx4],
+                city: cities[idx4],
+                locationProbability: locationProbability + "%",
+                issuanceLocation: locations[idx4]
+            };
+        }
+        
+        // Generate check digit explanation
+        function generateCheckDigitExplanation(idNumber) {
+            if (idNumber.length !== 9) {
+                return '<p style="color: #f87171;">התעודת זהות חייבת להכיל בדיוק 9 ספרות.</p>';
+            }
+            
+            const digits = idNumber.split('').map(digit => parseInt(digit));
+            let sum = 0;
+            let calculation = '<div style="font-family: monospace; direction: ltr; text-align: center; margin: 10px 0;">';
+            let steps = [];
+            
+            // Calculate each step
+            for (let i = 0; i < 8; i++) { // Only first 8 digits
+                let digit = digits[i];
+                let multiplier = (i % 2 === 0) ? 1 : 2;
+                let product = digit * multiplier;
+                let digitSum = product;
+                
+                if (product > 9) {
+                    digitSum = product - 9; // Correct way for Israeli ID
+                    steps.push(`${digit} × ${multiplier} = ${product} → ${product} - 9 = ${digitSum}`);
+                } else {
+                    steps.push(`${digit} × ${multiplier} = ${digitSum}`);
+                }
+                
+                sum += digitSum;
+            }
+            
+            calculation += '<table style="margin: 0 auto; border-collapse: collapse;">';
+            calculation += '<tr><th style="padding: 5px; border: 1px solid #666;">מיקום</th>';
+            for (let i = 0; i < 8; i++) {
+                calculation += `<th style="padding: 5px; border: 1px solid #666;">${i + 1}</th>`;
+            }
+            calculation += '<th style="padding: 5px; border: 1px solid #666; background: #dc2626;">9 (ביקורת)</th></tr>';
+            
+            calculation += '<tr><th style="padding: 5px; border: 1px solid #666;">ספרה</th>';
+            for (let i = 0; i < 8; i++) {
+                calculation += `<td style="padding: 5px; border: 1px solid #666; text-align: center;">${digits[i]}</td>`;
+            }
+            calculation += `<td style="padding: 5px; border: 1px solid #666; text-align: center; background: #dc2626; color: white;">${digits[8]}</td></tr>`;
+            
+            calculation += '<tr><th style="padding: 5px; border: 1px solid #666;">כפל ב-</th>';
+            for (let i = 0; i < 8; i++) {
+                let multiplier = (i % 2 === 0) ? 1 : 2;
+                calculation += `<td style="padding: 5px; border: 1px solid #666; text-align: center;">${multiplier}</td>`;
+            }
+            calculation += '<td style="padding: 5px; border: 1px solid #666; text-align: center;">-</td></tr>';
+            
+            calculation += '</table></div>';
+            
+            calculation += '<div style="margin: 15px 0; padding: 10px; background: rgba(37, 99, 235, 0.2); border-radius: 6px;">';
+            calculation += '<h5 style="color: #60a5fa; margin-bottom: 10px;">שלבי החישוב:</h5>';
+            calculation += '<div style="text-align: right;">';
+            for (let step of steps) {
+                calculation += `<div style="margin: 3px 0;">${step}</div>`;
+            }
+            calculation += '</div></div>';
+            
+            const mod = sum % 10;
+            const calculatedCheckDigit = (10 - mod) % 10;
+            const actualCheckDigit = digits[8];
+            
+            calculation += `<div style="margin: 10px 0; padding: 10px; background: rgba(51, 65, 85, 0.5); border-radius: 6px;">`;
+            calculation += `<strong>סכום כל התוצאות:</strong> ${sum}<br>`;
+            calculation += `<strong>שארית לחלוקה ב-10:</strong> ${sum} ÷ 10 = ${Math.floor(sum/10)} שארית ${mod}<br>`;
+            if (mod === 0) {
+                calculation += `<strong>ספרת ביקורת נכונה:</strong> כיוון שאין שארית, ספרת הביקורת היא 0<br>`;
+            } else {
+                calculation += `<strong>ספרת ביקורת נכונה:</strong> 10 - ${mod} = ${calculatedCheckDigit}<br>`;
+            }
+            calculation += `<strong>ספרת הביקורת שהוזנה:</strong> ${actualCheckDigit}<br>`;
+            if (calculatedCheckDigit === actualCheckDigit) {
+                calculation += `<span style="color: #4ade80;"><strong>✓ התוצאה:</strong> התעודת זהות תקינה!</span>`;
+            } else {
+                calculation += `<span style="color: #f87171;"><strong>✗ התוצאה:</strong> ספרת הביקורת שגויה!</span><br>`;
+                calculation += `<span style="color: #fbbf24;">המספר הנכון צריך להסתיים ב-${calculatedCheckDigit}</span>`;
+            }
+            calculation += `</div>`;
+            
+            return calculation;
+        }
+        
+        // Display results
+        function displayResults(data) {
+            document.getElementById('idDisplay').textContent = data.id;
+            document.getElementById('currentAge').textContent = data.age + " שנים";
+            document.getElementById('ageRange').textContent = data.ageRange;
+            document.getElementById('birthYear').textContent = data.birthYear;
+            document.getElementById('birthMonth').textContent = data.birthMonth;
+            document.getElementById('zodiacSign').textContent = data.zodiac;
+            document.getElementById('immigrationStatus').textContent = data.immigrationStatus;
+            document.getElementById('estimatedOrigin').textContent = data.origin;
+            document.getElementById('immigrationPeriod').textContent = data.period;
+            document.getElementById('generation').textContent = data.generation;
+            document.getElementById('mbtiType').textContent = data.mbti;
+            document.getElementById('personalityTraits').textContent = data.traits;
+            document.getElementById('strengthArea').textContent = data.strength;
+            document.getElementById('recommendedSkills').textContent = data.skills;
+            document.getElementById('securityScore').textContent = data.securityScore + "/100";
+            document.getElementById('securityCategory').textContent = data.securityCategory;
+            document.getElementById('clearanceLevel').textContent = data.clearanceLevel;
+            document.getElementById('recommendation').textContent = data.recommendation;
+            document.getElementById('estimatedRegion').textContent = data.region;
+            document.getElementById('estimatedCity').textContent = data.city;
+            document.getElementById('locationProbability').textContent = data.locationProbability;
+            document.getElementById('issuanceLocation').textContent = data.issuanceLocation;
+        }
+        
+        // Main analysis function
+        function analyzeID() {
+            const idNumber = document.getElementById('idNumber').value.trim();
+            const loadingSection = document.getElementById('loadingSection');
+            const resultsSection = document.getElementById('resultsSection');
+            const statusResult = document.getElementById('statusResult');
+            
+            // Reset display
+            resultsSection.style.display = 'none';
+            statusResult.innerHTML = '';
+            
+            // Validate input
+            if (!idNumber || idNumber.length !== 9 || !/^\d+$/.test(idNumber)) {
+                statusResult.innerHTML = '<div class="status-invalid"><i class="fas fa-times-circle"></i> יש להזין מספר תעודת זהות תקין בן 9 ספרות</div>';
+                return;
+            }
+            
+            // Validate ID
+            if (!validateIsraeliID(idNumber)) {
+                const checkDigitExplanation = generateCheckDigitExplanation(idNumber);
+                statusResult.innerHTML = `
+                    <div class="status-invalid">
+                        <i class="fas fa-times-circle"></i> מספר תעודת הזהות אינו תקין!
+                        <div style="margin-top: 15px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; text-align: right;">
+                            <h4 style="color: #fbbf24; margin-bottom: 10px;"><i class="fas fa-calculator"></i> הסבר נוסחת ספרת הביקורת:</h4>
+                            ${checkDigitExplanation}
+                            <div style="margin-top: 10px; padding: 10px; background: rgba(202, 138, 4, 0.2); border-radius: 6px; border-right: 3px solid #ca8a04;">
+                                <strong>הכלל:</strong> ספרת הביקורת (הספרה האחרונה) מחושבת כך שסכום כל הספרות לאחר הכפלה יתחלק ב-10 ללא שארית.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Show loading
+            loadingSection.style.display = 'block';
+            
+            // Simulate processing time
+            setTimeout(() => {
+                loadingSection.style.display = 'none';
+                statusResult.innerHTML = '<div class="status-valid"><i class="fas fa-check-circle"></i> מספר תעודת הזהות תקין ומאומת!</div>';
+                
+                const analysisData = generateAnalysis(idNumber);
+                displayResults(analysisData);
+                
+                resultsSection.style.display = 'block';
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }, 2500);
+        }
+        
+        // Event listeners
+        document.getElementById('analyzeBtn').addEventListener('click', analyzeID);
+        
+        document.getElementById('idNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyzeID();
+            }
+        });
+        
+        // Allow only digits
+        document.getElementById('idNumber').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    </script>
+</body>
+</html> 
