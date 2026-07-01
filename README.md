@@ -1,3 +1,3 @@
-# Israeli ID decoder and validator | מפענח ובודק תעודות זהות ישראליות
-
-MIT © 2026 [David Patlas](https://github.com/DavidPatlas-AI)
+# מפענח ובודק תעודות זהות ישראליות
+מפענח ומאמת מספרי ת.ז. ישראליים (ביקורת ספרת ביקורת).
+**הרצה:** פתח `index.html`.
